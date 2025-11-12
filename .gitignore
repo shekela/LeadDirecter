@@ -1,0 +1,102 @@
+## Ignore Visual Studio temporary files, build results, and user-specific files
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio 2019/2022 cache/options directory
+.vs/
+.vscode/
+
+# Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# NCrunch
+_NCrunch_*
+.*crunch*.local.xml
+
+# Roslyn cache directories
+*.ide/
+*.vspscc
+*.vssscc
+*.vsp
+*.vsmdi
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Visual Studio profiler
+*.psess
+*.vspx
+*.sap
+
+# Backup & report files
+*.bak
+*.Backup
+*.log
+*.dmp
+*.tmp
+*.cache
+*.pdb
+
+# Others
+*.dbmdl
+*.jfm
+*.bak
+*.tlog
+
+# NuGet packages
+*.nupkg
+# Ignore packages folder (if restoring via NuGet)
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+!**/[Pp]ackages/repositories.config
+
+# Rider
+.idea/
+*.sln.iml
+
+# Azure build artifacts
+[Aa]rtifacts/
+
+# Publish outputs
+[Pp]ublishProfiles/
+wwwroot/dist/
+node_modules/
+*.Publish.xml
+*.pubxml
+*.publishproj
+
+# User secrets
+**/appsettings.Development.json
+**/appsettings.Local.json
+**/secrets.json
+
+# DotCover / ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+.idea/.dotCover
+
+# Temporary files
+*.dbmdl
+*.jfm
