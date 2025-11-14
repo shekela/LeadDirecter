@@ -4,7 +4,7 @@ networks:
   leaddirecter_default:
     external: false
   elastic_default:
-    external: true
+    external: false
 
 services:
   db:
