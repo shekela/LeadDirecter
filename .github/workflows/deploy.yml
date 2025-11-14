@@ -18,12 +18,6 @@ jobs:
       - name: Build and start Postgres
         run: docker compose up -d db
 
-      - name: Make migration script executable
-        run: chmod +x ./run-migrations.sh
-
-      - name: Run EF Core migrations
-        run: ./run-migrations.sh
-
       - name: Start API container
         run: docker compose up -d --build webapi
 
