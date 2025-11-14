@@ -1,0 +1,60 @@
+version: '3.9'
+
+networks:
+  leaddirecter_default:
+    external: false
+  elastic_default:
+    external: true
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: CHingisxana03!
+      POSTGRES_DB: LeadDirecterDb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - leaddirecter_default
+      - elastic_default
+
+  migrate:
+    image: mcr.microsoft.com/dotnet/sdk:8.0
+    depends_on:
+      - db
+    working_dir: /src
+    volumes:
+      - .:/src
+    networks:
+      - leaddirecter_default
+    environment:
+      - ConnectionStrings__LeadDirecterDb=Host=db;Database=LeadDirecterDb;Username=postgres;Password=CHingisxana03!
+    entrypoint: sh -c "dotnet tool restore && dotnet restore LeadDirecter.WebApi && dotnet build LeadDirecter.WebApi && dotnet tool run dotnet-ef database update --project LeadDirecter.WebApi --startup-project LeadDirecter.WebApi"
+
+  webapi:
+    build:
+      context: .
+      dockerfile: LeadDirecter.WebApi/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__LeadDirecterDb=Host=db;Database=LeadDirecterDb;Username=postgres;Password=CHingisxana03!
+      - Elasticsearch__Uri=https://elastic-es01-1:9200
+      - Elasticsearch__Username=elastic
+      - Elasticsearch__Password=CHingisxana03
+      - Elasticsearch__LogIndexFormat=leaddirecter-logs-{0:yyyy.MM.dd}
+    volumes:
+      - ./ca.crt:/usr/local/share/ca-certificates/ca.crt:ro
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - leaddirecter_default
+      - elastic_default
+
+volumes:
+  pgdata:

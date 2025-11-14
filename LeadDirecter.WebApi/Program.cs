@@ -116,16 +116,19 @@ builder.Services.AddOpenTelemetry()
 
 var app = builder.Build();
 
-app.UseOpenTelemetryPrometheusScrapingEndpoint(); 
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 // ---------------------------
 // Middleware pipeline
 // ---------------------------
-if (app.Environment.IsDevelopment())
+// Remove the IsDevelopment check
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "LeadDirecter API v1");
+    c.RoutePrefix = "swagger"; // available at /swagger
+});
+
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 app.UseAuthorization();

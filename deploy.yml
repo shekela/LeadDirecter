@@ -1,0 +1,32 @@
+name: Deploy LeadDirecter
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Compose
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and start Postgres
+        run: docker compose up -d db
+
+      - name: Make migration script executable
+        run: chmod +x ./run-migrations.sh
+
+      - name: Run EF Core migrations
+        run: ./run-migrations.sh
+
+      - name: Start API container
+        run: docker compose up -d --build webapi
+
+      - name: Stop and clean up
+        if: always()
+        run: docker compose down

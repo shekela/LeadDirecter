@@ -1,0 +1,15 @@
+**/bin/
+**/obj/
+**/.vs/
+**/node_modules/
+*.user
+*.suo
+*.db
+*.log
+*.tmp
+*.pdb
+*.cache
+Dockerfile
+README.md
+.git/
+.gitignore
