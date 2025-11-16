@@ -19,6 +19,7 @@ using LeadDirecter.Data.Repository.CampaignValidationsRepository;
 using LeadDirecter.Data.Repository.LeadValidationsRepository;
 using LeadDirecter.Service.Validations.LeadValidationsService;
 using LeadDirecter.Service.Validations.CampaignValidationsService;
+using Serilog.Formatting.Json;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,41 +28,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Configure Serilog
 // ---------------------------
 
-Serilog.Debugging.SelfLog.Enable(msg =>
-{
-    Console.WriteLine("Serilog SelfLog: " + msg);
-});
-
-var elasticUri = new Uri(builder.Configuration["Elasticsearch:Uri"]);
-var username = builder.Configuration["Elasticsearch:Username"];
-var password = builder.Configuration["Elasticsearch:Password"];
-var logIndexFormat = builder.Configuration["Elasticsearch:LogIndexFormat"];
-
-Log.Logger = new LoggerConfiguration()
+var loggerConfig = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
     .Enrich.WithProperty("Service", "LeadDirecter")
     .Enrich.WithProperty("Environment", builder.Environment.EnvironmentName)
-    .Enrich.FromLogContext()
-    .WriteTo.Console()
-    .WriteTo.Logger(lc => lc
-        .Filter.ByExcluding(le =>
-            le.Properties.ContainsKey("RequestPath") &&
-            le.Properties["RequestPath"].ToString().Trim('"') == "/metrics"
-        )
-        .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(elasticUri)
-        {
-            IndexFormat = logIndexFormat,
-            AutoRegisterTemplate = true,
-            ModifyConnectionSettings = x => x
-                .BasicAuthentication(username, password)
-                .ServerCertificateValidationCallback((o, cert, chain, errors) => true)
-        })
-    )
-    .CreateLogger();
+    .WriteTo.Console(new JsonFormatter()); 
 
-Log.Information("Serilog with Elasticsearch configured successfully");
-
+Log.Logger = loggerConfig.CreateLogger();
 builder.Host.UseSerilog();
+
+
 
 
 
@@ -99,7 +76,7 @@ builder.Services.AddControllers();
 builder.Services.AddValidatorsFromAssemblyContaining<CampaignRequestValidator>();
 
 builder.Services.AddDbContext<DataContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("LeadDirecterDb")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -129,10 +106,17 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger"; // available at /swagger
 });
 
-app.UseSerilogRequestLogging();
+//app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.UseCorrelationId();
 app.UseMiddleware<ValidationMiddleware>();
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<DataContext>();
+    db.Database.Migrate(); 
+}
+
 app.Run();

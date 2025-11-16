@@ -45,17 +45,15 @@ namespace LeadDirecter.Service.Services.LeadsService
 
             using (LogContext.PushProperty("CorrelationId", correlationId))
             {
-                _logger.LogInformation("Processing new lead. {CorrelationId}", correlationId);
-                var lead = request.MapToLead();
+                _logger.LogInformation("Processing new lead. {CorrelationId}", correlationId);                
+                var crmConfig = await GetCrmConfigurationAsync(request, cancellationToken);
+                var (lead, crmRequest) = await _leadBuilder.BuildLeadRequestAsync(request, crmConfig);
+                var crmResponse = await SendLeadToCrmAsync(crmRequest, correlationId, crmConfig);
                 var saved = await SaveLeadAsync(lead, cancellationToken);
-                //var crmConfig = await GetCrmConfigurationAsync(request, cancellationToken);
-                //var (lead, crmRequest) = await _leadBuilder.BuildLeadRequestAsync(request, crmConfig);
-                //var crmResponse = await SendLeadToCrmAsync(crmRequest, correlationId, crmConfig);
-                
 
-                //_logger.LogInformation(
-                //    "Lead processed. Success={Success}, Saved={Saved}, CorrelationId={CorrelationId}",
-                //    crmResponse.IsSuccess, saved, correlationId);
+                _logger.LogInformation(
+                    "Lead processed. Success={Success}, Saved={Saved}, CorrelationId={CorrelationId}",
+                    crmResponse.IsSuccess, saved, correlationId);
 
                 return new LeadResponse
                 {
