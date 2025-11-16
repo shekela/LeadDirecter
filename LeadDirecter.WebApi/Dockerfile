@@ -10,6 +10,7 @@ WORKDIR /src
 # Copy everything and restore
 COPY ["LeadDirecter.WebApi/LeadDirecter.WebApi.csproj", "LeadDirecter.WebApi/"]
 COPY ["LeadDirecter.Data/LeadDirecter.Data.csproj", "LeadDirecter.Data/"]
+COPY ["LeadDirecter.Service/LeadDirecter.Service.csproj", "LeadDirecter.Service/"]
 COPY ["LeadDirecter.Model/LeadDirecter.Model.csproj", "LeadDirecter.Model/"]
 COPY ["LeadDirecter.Shared/LeadDirecter.Shared.csproj", "LeadDirecter.Shared/"]
 RUN dotnet restore "LeadDirecter.WebApi/LeadDirecter.WebApi.csproj"

@@ -20,6 +20,7 @@ using LeadDirecter.Data.Repository.LeadValidationsRepository;
 using LeadDirecter.Service.Validations.LeadValidationsService;
 using LeadDirecter.Service.Validations.CampaignValidationsService;
 using Serilog.Formatting.Json;
+using Serilog.Formatting.Compact;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,7 +34,7 @@ var loggerConfig = new LoggerConfiguration()
     .Enrich.FromLogContext()
     .Enrich.WithProperty("Service", "LeadDirecter")
     .Enrich.WithProperty("Environment", builder.Environment.EnvironmentName)
-    .WriteTo.Console(new JsonFormatter()); 
+    .WriteTo.Console(new CompactJsonFormatter());
 
 Log.Logger = loggerConfig.CreateLogger();
 builder.Host.UseSerilog();
