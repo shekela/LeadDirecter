@@ -59,7 +59,7 @@ namespace LeadDirecter.Service.Services.LeadsService
                 {
                     LeadSentSuccessfully = false,
                     LeadSaved = saved,
-                    ApiResponse = null,
+                    ApiResponse = crmResponse,
                     TraceId = correlationId
                 };
             }
